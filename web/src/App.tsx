@@ -170,6 +170,11 @@ function HomePage() {
             najkorisnijih tefsira. Ajete objašnjava jednostavnim jezikom, ističući njihova značenja,
             pouke i propise, uz čvrsto oslanjanje na razumijevanje ehli-sunneta.
           </p>
+          <a className="app-link" href="https://github.com/amarhusika/tefsir-sadi"
+             target="_blank" rel="noopener noreferrer">
+            <img src="/app-icon.png" alt="" aria-hidden="true" />
+            <span>Mobilna aplikacija</span>
+          </a>
         </div>
       </main>
     </div>
@@ -591,5 +596,14 @@ const EXTRA_CSS = `
   }
   .progress-meta { font-size: 0.8rem; color: var(--ink-4); margin-top: 6px; }
   .about-card p { color: var(--ink-3); font-size: 0.95rem; line-height: 1.7; }
+  .app-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    margin-top: 16px; padding: 10px 18px;
+    border: 1px solid var(--border); border-radius: 999px;
+    color: var(--ink-2); font-weight: 600; font-size: 0.92rem;
+    background: var(--warm-white); transition: all 0.15s;
+  }
+  .app-link:hover { border-color: var(--sienna); color: var(--sienna); background: var(--parchment); }
+  .app-link img { width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0; }
   .home-old-link { text-align: center; font-size: 0.8rem; color: var(--ink-4); }
 `;

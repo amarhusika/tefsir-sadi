@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tamna tema (crna pozadina) -->
+    <color name="bg">#0B0A08</color>
+    <color name="card">#181511</color>
+    <color name="parchment">#201C17</color>
+    <color name="parchment_2">#28231C</color>
+    <color name="parchment_3">#3A3329</color>
+    <color name="ink">#EFE7D8</color>
+    <color name="ink_2">#DDD2BF</color>
+    <color name="ink_3">#B9AC95</color>
+    <color name="ink_4">#928571</color>
+    <color name="sienna">#D9915A</color>
+    <color name="sienna_d">#E9AD7D</color>
+    <color name="gold">#D4AA4A</color>
+    <color name="sage">#93B893</color>
+    <color name="sage_bg">#2693B893</color>
+    <color name="border">#3D352B</color>
+    <color name="border_l">#2C261F</color>
+    <color name="error">#E07070</color>
+</resources>

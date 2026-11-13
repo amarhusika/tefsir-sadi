@@ -1,7 +1,7 @@
 # Tefsir es-Sa'di na bosanskom
 
 **🌐 Web:** [tefsir.pages.dev](https://tefsir.pages.dev)  
-**📱 Android:** [preuzmi najnoviju verziju (APK)](../../releases/latest)
+**📱 Android:** [preuzmi najnoviju verziju (APK)](https://github.com/amarhusika/tefsir-sadi/releases/download/v1.0/tefsir.apk)
 
 Tefsir šejha Abdurrahmana b. Nasira es-Sa'dija (*Tejsirul-Kerimir-Rahman fi tefsiri kelamil-Mennan*) na bosanskom jeziku: arapski tekst ajeta, prijevod značenja i tumačenje svakog ajeta. Prijevod značenja ajeta usklađen je s tefsirom šejha.
 

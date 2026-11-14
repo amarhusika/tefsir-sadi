@@ -17,6 +17,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.widget.doAfterTextChanged
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 
@@ -96,6 +97,7 @@ class AyahNavigatorView @JvmOverloads constructor(
             if (hasFocus) revealInput()
         }
         etRef.setOnClickListener { revealInput() }
+        etRef.doAfterTextChanged { showError(false) }
 
         findViewById<View>(R.id.btnGo).setOnClickListener { go() }
 
@@ -182,16 +184,32 @@ class AyahNavigatorView @JvmOverloads constructor(
         if (diff > 0) sv.smoothScrollBy(0, diff)
     }
 
-    private fun showError(on: Boolean) {
-        tvHint.text = if (on) "Neispravan unos — upiši suru i ajet, npr. 2:255" else "Sura:Ajet"
-        tvHint.setTextColor(ContextCompat.getColor(context, if (on) R.color.error else R.color.ink_4))
+    private fun showError(on: Boolean) = showError(if (on) "Pogrešan unos. Primjer: 2:255" else null)
+
+    private fun showError(msg: String?) {
+        tvHint.text = msg ?: "Sura:Ajet"
+        tvHint.setTextColor(ContextCompat.getColor(context, if (msg != null) R.color.error else R.color.ink_4))
+    }
+
+    /** null = ispravno, inače kratka poruka o grešci */
+    private fun validate(text: String): String? {
+        val m = Regex("^\\s*(\\d+)\\s*[:\\s]\\s*(\\d+)\\s*$").find(text)
+            ?: return "Pogrešan unos. Primjer: 2:255"
+        val s = m.groupValues[1].toIntOrNull() ?: return "Pogrešan unos. Primjer: 2:255"
+        val a = m.groupValues[2].toIntOrNull() ?: return "Pogrešan unos. Primjer: 2:255"
+        if (s !in 1..114) return "Pogrešan unos: sura mora biti 1–114."
+        val max = Quran.AYAH_COUNT[s]
+        if (a !in 1..max) return "Pogrešan unos: sura $s ima ajete 1–$max."
+        return null
     }
 
     private fun go() {
         if (textMode) {
-            val ref = Quran.parseRef(etRef.text?.toString())
-            if (ref == null) {
-                showError(true)
+            val text = etRef.text?.toString() ?: ""
+            val err = validate(text)
+            val ref = Quran.parseRef(text)
+            if (err != null || ref == null) {
+                showError(err ?: "Pogrešan unos. Primjer: 2:255")
                 return
             }
             etRef.hideKeyboard()

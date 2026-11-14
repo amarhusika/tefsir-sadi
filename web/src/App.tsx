@@ -219,6 +219,11 @@ function TafsirPage() {
   };
 
   const [copied, setCopied] = useState<"" | "ok" | "err">("");
+  // Na mobitelu je "Idi na ajet" sakriven i otvara se dugmetom u gornjoj traci
+  const [navOpen, setNavOpen] = useState(false);
+  const toggleNav = () => {
+    setNavOpen(v => !v);
+  };
 
   const handleCopy = async () => {
     if (!data) return;
@@ -232,7 +237,6 @@ function TafsirPage() {
     } else if (!data.tefsir_ar) {
       parts.push(`Tefsir es-Sa'di: tumačenje ovog ajeta obuhvaćeno je tefsirom ajeta ${(data.vidi || []).join(" i ")}.`);
     }
-    parts.push(`${window.location.origin}/${sura}:${ayah}`);
     const ok = await copyText(parts.join("\n\n"));
     setCopied(ok ? "ok" : "err");
     setTimeout(() => setCopied(""), 2000);
@@ -247,6 +251,7 @@ function TafsirPage() {
 
   useEffect(() => {
     if (!isValid) { setLoading(false); return; }
+    setNavOpen(false);
     setLoading(true);
     setError(null);
     setData(null);
@@ -276,6 +281,7 @@ function TafsirPage() {
     const handler = (e: KeyboardEvent) => {
       const t = e.target as HTMLElement;
       if (t && (t.tagName === "INPUT" || t.tagName === "SELECT")) return;
+      if (e.key === "Escape") setNavOpen(false);
       if (e.key === "ArrowLeft" && hasPrev) navigate(`/${getPrev()}`);
       if (e.key === "ArrowRight" && hasNext) navigate(`/${getNext()}`);
     };
@@ -314,13 +320,19 @@ function TafsirPage() {
           <span>Početna</span>
         </Link>
 
-        <div className="topbar-ref">
+        <div className="topbar-ref" onClick={toggleNav}>
           <span className="ref-sura">{SURA_NAMES[sura!]?.ar}</span>
           <span className="ref-sep">·</span>
           <span className="ref-num">{sura}:{ayah}</span>
         </div>
 
         <div className="topbar-nav">
+          <button className={`nav-arrow nav-toggle${navOpen ? " active" : ""}`} onClick={toggleNav}
+                  title="Idi na ajet" aria-label="Idi na ajet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+              <circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>
+            </svg>
+          </button>
           {prev ? <Link to={`/${prev}`} className="nav-arrow" title="Prethodni ajet (←)">{arrowL}</Link>
                 : <span className="nav-arrow disabled">{arrowL}</span>}
           {next ? <Link to={`/${next}`} className="nav-arrow" title="Sljedeći ajet (→)">{arrowR}</Link>
@@ -329,7 +341,8 @@ function TafsirPage() {
       </nav>
 
       <div className="tafsir-layout">
-        <aside className="tafsir-sidebar">
+        <aside className={`tafsir-sidebar${navOpen ? " open" : ""}`}
+               onClick={e => { if (e.target === e.currentTarget) setNavOpen(false); }}>
           <div className="sidebar-inner">
             <p className="sidebar-label">Idi na ajet</p>
             <AyahNavigator
@@ -345,20 +358,7 @@ function TafsirPage() {
               <div className="si-count">{SURA_AYAH_COUNT[sura!]} ajeta</div>
             </div>
 
-            <div className="sidebar-pn">
-              {prev ? (
-                <Link to={`/${prev}`} className="pn-btn pn-prev">
-                  {arrowL}
-                  <div><span className="pn-label">Prethodni</span><span className="pn-ref">{prev}</span></div>
-                </Link>
-              ) : null}
-              {next ? (
-                <Link to={`/${next}`} className="pn-btn pn-next">
-                  <div><span className="pn-label">Sljedeći</span><span className="pn-ref">{next}</span></div>
-                  {arrowR}
-                </Link>
-              ) : null}
-            </div>
+            <button className="sheet-close" onClick={() => setNavOpen(false)}>Zatvori</button>
           </div>
         </aside>
 
@@ -596,6 +596,54 @@ const EXTRA_CSS = `
   }
   .progress-meta { font-size: 0.8rem; color: var(--ink-4); margin-top: 6px; }
   .about-card p { color: var(--ink-3); font-size: 0.95rem; line-height: 1.7; }
+
+  /* Mobitel: "Idi na ajet" je sakriven dok se ne otvori dugmetom (lupa) u gornjoj traci */
+  .input-error {
+    display: block; margin-top: 8px;
+    font-size: 0.8rem; color: #a33; text-align: center;
+  }
+  .nav-toggle { display: none; }
+  @media (max-width: 900px) {
+    .nav-toggle { display: flex; }
+    .nav-toggle.active { background: var(--parchment-3); color: var(--sienna); }
+    .topbar-ref { cursor: pointer; }
+    /* "Idi na ajet" kao iskačući prozor (kao u Android aplikaciji) */
+    .tafsir-sidebar { display: none; }
+    .tafsir-sidebar.open {
+      display: flex; align-items: center; justify-content: center;
+      position: fixed; inset: 0; z-index: 200;
+      height: auto; padding: 20px;
+      background: rgba(20,14,6,0.5);
+      border: none;
+      animation: sheet-fade 0.15s ease-out;
+    }
+    .tafsir-sidebar.open .sidebar-inner {
+      width: 100%; max-width: 420px;
+      max-height: calc(100vh - 40px); overflow-y: auto;
+      background: var(--warm-white);
+      border-radius: 24px;
+      padding: 24px 20px 12px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+      gap: 18px;
+      animation: sheet-pop 0.18s ease-out;
+    }
+    .tafsir-sidebar.open .sidebar-label {
+      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 600;
+      text-transform: none; letter-spacing: 0; color: var(--ink);
+    }
+    .tafsir-sidebar.open .sidebar-sura-info { display: none; }
+    .sheet-close {
+      display: block; align-self: flex-end;
+      padding: 10px 14px; border-radius: 999px;
+      font-size: 0.9rem; font-weight: 600; color: var(--sienna);
+    }
+    .sheet-close:hover { background: var(--parchment-2); }
+  }
+  .sheet-close { display: none; }
+  @media (max-width: 900px) { .tafsir-sidebar.open .sheet-close { display: block; } }
+  @keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes sheet-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
+  }
   .app-link {
     display: inline-flex; align-items: center; gap: 10px;
     margin-top: 16px; padding: 10px 18px;

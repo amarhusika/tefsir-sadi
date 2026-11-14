@@ -12,21 +12,22 @@ export default function AyahNavigator({ onNavigate, initialSura, initialAyah }: 
   const [sura, setSura] = useState<number>(initialSura || 1);
   const [ayah, setAyah] = useState<number>(initialAyah || 1);
   const [mode, setMode] = useState<"dropdowns" | "text">("dropdowns");
+  const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const maxAyah = SURA_AYAH_COUNT[sura] || 1;
 
   const handleGo = () => {
     if (mode === "text") {
-      const match = input.match(/^(\d+)\s*[:\s]\s*(\d+)$/);
-      if (match) {
-        const s = parseInt(match[1]);
-        const a = parseInt(match[2]);
-        if (s >= 1 && s <= 114 && a >= 1 && a <= (SURA_AYAH_COUNT[s] || 1)) {
-          onNavigate(s, a);
-          return;
-        }
-      }
+      const match = input.trim().match(/^(\d+)\s*[:\s]\s*(\d+)$/);
+      if (!match) { setError("Pogrešan unos. Primjer: 2:255"); return; }
+      const s = parseInt(match[1]);
+      const a = parseInt(match[2]);
+      if (s < 1 || s > 114) { setError("Pogrešan unos: sura mora biti 1–114."); return; }
+      const max = SURA_AYAH_COUNT[s];
+      if (a < 1 || a > max) { setError(`Pogrešan unos: sura ${s} ima ajete 1–${max}.`); return; }
+      setError("");
+      onNavigate(s, a);
       return;
     }
     onNavigate(sura, ayah);
@@ -87,7 +88,7 @@ export default function AyahNavigator({ onNavigate, initialSura, initialAyah }: 
               pattern="[0-9:]*"
               placeholder="npr. 2:255"
               value={input}
-              onChange={e => setInput(e.target.value.replace(/[^0-9:]/g, ""))}
+              onChange={e => { setInput(e.target.value.replace(/[^0-9:]/g, "")); setError(""); }}
               onKeyDown={handleKeyDown}
             />
             <button
@@ -101,7 +102,9 @@ export default function AyahNavigator({ onNavigate, initialSura, initialAyah }: 
               }}
             >:</button>
           </div>
-          <span className="input-hint">Sura:Ajet</span>
+          {error
+            ? <span className="input-error" role="alert">{error}</span>
+            : <span className="input-hint">Sura:Ajet</span>}
         </div>
       )}
 

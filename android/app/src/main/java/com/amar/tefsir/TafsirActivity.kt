@@ -40,7 +40,6 @@ class TafsirActivity : AppCompatActivity() {
         private const val EXTRA_SURA = "sura"
         private const val EXTRA_AYAH = "ayah"
         private const val STATE_REF = "ref"
-        const val SITE = "https://tefsir.pages.dev"
 
         fun intent(ctx: Context, sura: Int, ayah: Int) =
             Intent(ctx, TafsirActivity::class.java).putExtra(EXTRA_SURA, sura).putExtra(EXTRA_AYAH, ayah)
@@ -397,7 +396,6 @@ class TafsirActivity : AppCompatActivity() {
         } else if (aj.tefsirAr.isBlank()) {
             parts.add("Tefsir es-Sa'di: tumačenje ovog ajeta obuhvaćeno je tefsirom ajeta ${aj.vidi.joinToString(" i ")}.")
         }
-        parts.add("$SITE/$sura:$ayah")
         return parts.joinToString("\n\n")
     }
 

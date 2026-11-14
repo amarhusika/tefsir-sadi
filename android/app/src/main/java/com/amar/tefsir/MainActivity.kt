@@ -24,6 +24,13 @@ class MainActivity : AppCompatActivity() {
         ccRef = findViewById(R.id.ccRef)
 
         findViewById<AyahNavigatorView>(R.id.navigator).onNavigate = { s, a -> open(s, a) }
+
+        // svijetla / tamna tema: ikona pokazuje temu na koju se prelazi
+        findViewById<android.widget.ImageButton>(R.id.btnTheme).apply {
+            setImageResource(if (isNight()) R.drawable.ic_sun else R.drawable.ic_moon)
+            contentDescription = if (isNight()) "Svijetla tema" else "Tamna tema"
+            setOnClickListener { Theme.toggle(this@MainActivity) }
+        }
         continueCard.setOnClickListener {
             Prefs.lastRef(this)?.let { (s, a) -> open(s, a) }
         }

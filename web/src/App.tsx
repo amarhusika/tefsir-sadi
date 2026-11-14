@@ -109,6 +109,64 @@ function useSuraIndex() {
   return idx;
 }
 
+// ─── Tema (svijetla / tamna) ──────────────────────────────────────────────────
+// Bez ručnog izbora prati se tema uređaja. Klik prebacuje na suprotnu temu;
+// ako je to ista tema kao sistemska, izbor se briše i opet se prati sistem.
+
+const THEME_KEY = "sadi_theme";
+const systemDark = () => window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+function storedTheme(): "light" | "dark" | null {
+  try { const v = localStorage.getItem(THEME_KEY); return v === "light" || v === "dark" ? v : null; }
+  catch { return null; }
+}
+
+function ThemeToggle({ className = "" }: { className?: string }) {
+  const [dark, setDark] = useState<boolean>(() => {
+    const t = storedTheme();
+    return t ? t === "dark" : systemDark();
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!mq) return;
+    const onChange = () => { if (!storedTheme()) setDark(mq.matches); };
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    try {
+      if (next === systemDark()) {
+        localStorage.removeItem(THEME_KEY);
+        document.documentElement.removeAttribute("data-theme");
+      } else {
+        localStorage.setItem(THEME_KEY, next ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+      }
+    } catch {
+      document.documentElement.setAttribute("data-theme", next ? "dark" : "light");
+    }
+    setDark(next);
+  };
+
+  return (
+    <button className={`theme-toggle ${className}`} onClick={toggle}
+            title={dark ? "Svijetla tema" : "Tamna tema"} aria-label={dark ? "Svijetla tema" : "Tamna tema"}>
+      {dark ? (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <circle cx="12" cy="12" r="4.5"/>
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>
+        </svg>
+      )}
+    </button>
+  );
+}
+
 // ─── Home Page ─────────────────────────────────────────────────────────────────
 
 function HomePage() {
@@ -118,6 +176,7 @@ function HomePage() {
 
   return (
     <div className="page home-page">
+      <ThemeToggle className="home-theme" />
       <div className="home-bg-deco" aria-hidden="true">
         <div className="deco-circle c1" />
         <div className="deco-circle c2" />
@@ -320,19 +379,15 @@ function TafsirPage() {
           <span>Početna</span>
         </Link>
 
-        <div className="topbar-ref" onClick={toggleNav}>
-          <span className="ref-sura">{SURA_NAMES[sura!]?.ar}</span>
-          <span className="ref-sep">·</span>
-          <span className="ref-num">{sura}:{ayah}</span>
-        </div>
+        <button className={`goto-btn${navOpen ? " active" : ""}`} onClick={toggleNav} aria-label="Idi na ajet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>
+          </svg>
+          <span>Idi na ajet</span>
+        </button>
 
         <div className="topbar-nav">
-          <button className={`nav-arrow nav-toggle${navOpen ? " active" : ""}`} onClick={toggleNav}
-                  title="Idi na ajet" aria-label="Idi na ajet">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-              <circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/>
-            </svg>
-          </button>
+          <ThemeToggle className="nav-arrow" />
           {prev ? <Link to={`/${prev}`} className="nav-arrow" title="Prethodni ajet (←)">{arrowL}</Link>
                 : <span className="nav-arrow disabled">{arrowL}</span>}
           {next ? <Link to={`/${next}`} className="nav-arrow" title="Sljedeći ajet (→)">{arrowR}</Link>
@@ -522,18 +577,18 @@ const EXTRA_CSS = `
   .lang-toggle {
     font-size: 0.78rem; font-weight: 600; color: var(--sienna);
     padding: 6px 12px; border: 1px solid var(--border); border-radius: 999px;
-    background: white; transition: all 0.15s;
+    background: var(--card); transition: all 0.15s;
   }
   .lang-toggle:hover { border-color: var(--sienna); background: var(--parchment); }
   .tafsir-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .ar-toggle-row { display: flex; justify-content: flex-end; margin: 22px 0 10px; }
   .copy-btn.ok { color: var(--sage); border-color: var(--sage); }
-  .copy-btn.err { color: #a33; border-color: #a33; }
+  .copy-btn.err { color: var(--error); border-color: var(--error); }
 
   .continue-card {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 18px 24px;
-    background: linear-gradient(135deg, var(--sienna), var(--sienna-d));
+    background: linear-gradient(135deg, var(--btn), var(--btn-d));
     color: white; border-radius: var(--r-lg);
     box-shadow: 0 4px 16px rgba(139,69,19,0.3);
     transition: transform 0.15s, box-shadow 0.15s;
@@ -582,7 +637,7 @@ const EXTRA_CSS = `
   .covered-note a { color: var(--sienna); font-weight: 600; text-decoration: underline; }
 
   .progress-card, .about-card {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border-l);
     border-radius: var(--r-lg);
     padding: 24px 28px;
@@ -597,53 +652,67 @@ const EXTRA_CSS = `
   .progress-meta { font-size: 0.8rem; color: var(--ink-4); margin-top: 6px; }
   .about-card p { color: var(--ink-3); font-size: 0.95rem; line-height: 1.7; }
 
-  /* Mobitel: "Idi na ajet" je sakriven dok se ne otvori dugmetom (lupa) u gornjoj traci */
   .input-error {
     display: block; margin-top: 8px;
-    font-size: 0.8rem; color: #a33; text-align: center;
+    font-size: 0.8rem; color: var(--error); text-align: center;
   }
-  .nav-toggle { display: none; }
-  @media (max-width: 900px) {
-    .nav-toggle { display: flex; }
-    .nav-toggle.active { background: var(--parchment-3); color: var(--sienna); }
-    .topbar-ref { cursor: pointer; }
-    /* "Idi na ajet" kao iskačući prozor (kao u Android aplikaciji) */
-    .tafsir-sidebar { display: none; }
-    .tafsir-sidebar.open {
-      display: flex; align-items: center; justify-content: center;
-      position: fixed; inset: 0; z-index: 200;
-      height: auto; padding: 20px;
-      background: rgba(20,14,6,0.5);
-      border: none;
-      animation: sheet-fade 0.15s ease-out;
-    }
-    .tafsir-sidebar.open .sidebar-inner {
-      width: 100%; max-width: 420px;
-      max-height: calc(100vh - 40px); overflow-y: auto;
-      background: var(--warm-white);
-      border-radius: 24px;
-      padding: 24px 20px 12px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-      gap: 18px;
-      animation: sheet-pop 0.18s ease-out;
-    }
-    .tafsir-sidebar.open .sidebar-label {
-      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 600;
-      text-transform: none; letter-spacing: 0; color: var(--ink);
-    }
-    .tafsir-sidebar.open .sidebar-sura-info { display: none; }
-    .sheet-close {
-      display: block; align-self: flex-end;
-      padding: 10px 14px; border-radius: 999px;
-      font-size: 0.9rem; font-weight: 600; color: var(--sienna);
-    }
-    .sheet-close:hover { background: var(--parchment-2); }
+  .theme-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: var(--r-sm);
+    color: var(--ink-2); transition: all 0.15s;
   }
-  .sheet-close { display: none; }
-  @media (max-width: 900px) { .tafsir-sidebar.open .sheet-close { display: block; } }
+  .theme-toggle:hover { background: var(--parchment-3); color: var(--sienna); }
+  .theme-toggle svg { width: 18px; height: 18px; }
+  .home-theme {
+    position: absolute; top: 16px; right: 16px; z-index: 5;
+    width: 42px; height: 42px; border-radius: 999px;
+    background: var(--card); border: 1px solid var(--border-l);
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  .home-theme svg { width: 20px; height: 20px; }
+  /* "Idi na ajet": dugme u gornjoj traci otvara iskačući prozor (na svim ekranima) */
+  .goto-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 7px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--card);
+    color: var(--ink-2); font-size: 0.85rem; font-weight: 600;
+    transition: all 0.15s;
+  }
+  .goto-btn svg { width: 15px; height: 15px; color: var(--sienna); }
+  .goto-btn:hover, .goto-btn.active { border-color: var(--sienna); color: var(--sienna); }
+  .tafsir-layout { grid-template-columns: 1fr; max-width: 900px; }
+  .tafsir-sidebar { display: none; }
+  .tafsir-sidebar.open {
+    display: flex; align-items: center; justify-content: center;
+    position: fixed; inset: 0; z-index: 200;
+    height: auto; padding: 20px;
+    background: rgba(20,14,6,0.5);
+    border: none;
+    animation: sheet-fade 0.15s ease-out;
+  }
+  .tafsir-sidebar.open .sidebar-inner {
+    width: 100%; max-width: 420px;
+    max-height: calc(100vh - 40px); overflow-y: auto;
+    background: var(--warm-white);
+    border-radius: 24px;
+    padding: 24px 20px 12px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    gap: 18px;
+    animation: sheet-pop 0.18s ease-out;
+  }
+  .tafsir-sidebar.open .sidebar-label {
+    font-family: var(--font-serif); font-size: 1.3rem; font-weight: 600;
+    text-transform: none; letter-spacing: 0; color: var(--ink);
+  }
+  .tafsir-sidebar.open .sidebar-sura-info { display: none; }
+  .sheet-close {
+    display: block; align-self: flex-end;
+    padding: 10px 14px; border-radius: 999px;
+    font-size: 0.9rem; font-weight: 600; color: var(--sienna);
+  }
+  .sheet-close:hover { background: var(--parchment-2); }
   @keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes sheet-pop { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: none; } }
-  }
   .app-link {
     display: inline-flex; align-items: center; gap: 10px;
     margin-top: 16px; padding: 10px 18px;

@@ -62,6 +62,10 @@ object Prefs {
     fun lastRef(c: Context): Pair<Int, Int>? = Quran.parseRef(sp(c).getString("last_ref", null))
     fun setLastRef(c: Context, s: Int, a: Int) = sp(c).edit().putString("last_ref", "$s:$a").apply()
 
+    fun nightMode(c: Context) =
+        sp(c).getInt("night_mode", androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    fun setNightMode(c: Context, mode: Int) = sp(c).edit().putInt("night_mode", mode).apply()
+
     fun showAr(c: Context) = sp(c).getBoolean("show_ar", false)
     fun setShowAr(c: Context, v: Boolean) = sp(c).edit().putBoolean("show_ar", v).apply()
 }

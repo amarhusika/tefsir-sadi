@@ -18,9 +18,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
-import android.view.GestureDetector
 import android.view.KeyEvent
-import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ScrollView
@@ -31,7 +29,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.util.concurrent.Executors
-import kotlin.math.abs
 
 /** Stranica ajeta: arapski tekst, prijevod značenja, tefsir es-Sa'di */
 class TafsirActivity : AppCompatActivity() {
@@ -77,8 +74,6 @@ class TafsirActivity : AppCompatActivity() {
     private lateinit var btnBottomPrev: TextView
     private lateinit var btnBottomNext: TextView
 
-    private lateinit var gestures: GestureDetector
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupEdgeToEdge()
@@ -117,7 +112,6 @@ class TafsirActivity : AppCompatActivity() {
         findViewById<View>(R.id.btnHome).setOnClickListener { goHome() }
         findViewById<View>(R.id.btnErrHome).setOnClickListener { goHome() }
         findViewById<View>(R.id.refBox).setOnClickListener { showGotoDialog() }
-        findViewById<View>(R.id.btnGoto).setOnClickListener { showGotoDialog() }
         btnPrev.setOnClickListener { goPrev() }
         btnNext.setOnClickListener { goNext() }
         btnBottomPrev.setOnClickListener { goPrev() }
@@ -128,21 +122,6 @@ class TafsirActivity : AppCompatActivity() {
             Prefs.setShowAr(this, !Prefs.showAr(this))
             updateArToggle()
         }
-
-        // prevlačenje lijevo/desno = sljedeći/prethodni ajet
-        val minDist = dp(90)
-        gestures = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-                if (e1 == null || sura == 0) return false
-                val dx = e2.x - e1.x
-                val dy = e2.y - e1.y
-                if (abs(dx) > minDist && abs(dx) > abs(dy) * 2 && abs(velocityX) > 700) {
-                    if (dx < 0) goNext() else goPrev()
-                    return true
-                }
-                return false
-            }
-        })
 
         val ref = savedInstanceState?.getString(STATE_REF)?.let { Quran.parseRef(it) }
             ?: refFromIntent(intent)
@@ -173,11 +152,6 @@ class TafsirActivity : AppCompatActivity() {
         super.onDestroy()
         executor.shutdownNow()
         main.removeCallbacksAndMessages(null)
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        gestures.onTouchEvent(ev)
-        return super.dispatchTouchEvent(ev)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

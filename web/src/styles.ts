@@ -28,6 +28,41 @@ export const BASE_CSS = `
     --font-body: 'Source Sans 3', sans-serif;
     --font-serif: 'Lora', serif;
     --font-arabic: 'Noto Naskh Arabic', serif;
+    --card:         #ffffff;
+    --topbar-bg:    rgba(245,240,232,0.92);
+    --btn:          #8b4513;
+    --btn-l:        #b05a1c;
+    --btn-d:        #6b330e;
+    --error:        #aa3333;
+    color-scheme: light;
+  }
+
+  /* ── TAMNA TEMA: prati sistem, osim ako je ručno odabrana svijetla/tamna ── */
+  :root[data-theme="dark"] { 
+    --parchment: #201c17; --parchment-2: #28231c; --parchment-3: #3a3329;
+    --warm-white: #0b0a08; --card: #181511;
+    --ink: #efe7d8; --ink-2: #ddd2bf; --ink-3: #b9ac95; --ink-4: #928571;
+    --sienna: #d9915a; --sienna-l: #e5a06a; --sienna-d: #e9ad7d;
+    --gold: #d4aa4a; --gold-l: #e0bc66; --sage: #93b893;
+    --border: #3d352b; --border-l: #2c261f;
+    --shadow: rgba(0,0,0,0.45); --shadow-m: rgba(0,0,0,0.6);
+    --topbar-bg: rgba(24,21,17,0.92);
+    --error: #e07070;
+    color-scheme: dark;
+   }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { 
+    --parchment: #201c17; --parchment-2: #28231c; --parchment-3: #3a3329;
+    --warm-white: #0b0a08; --card: #181511;
+    --ink: #efe7d8; --ink-2: #ddd2bf; --ink-3: #b9ac95; --ink-4: #928571;
+    --sienna: #d9915a; --sienna-l: #e5a06a; --sienna-d: #e9ad7d;
+    --gold: #d4aa4a; --gold-l: #e0bc66; --sage: #93b893;
+    --border: #3d352b; --border-l: #2c261f;
+    --shadow: rgba(0,0,0,0.45); --shadow-m: rgba(0,0,0,0.6);
+    --topbar-bg: rgba(24,21,17,0.92);
+    --error: #e07070;
+    color-scheme: dark;
+   }
   }
 
   html { scroll-behavior: smooth; }
@@ -124,7 +159,7 @@ export const BASE_CSS = `
   }
 
   .nav-card {
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border-l);
     border-radius: var(--r-lg);
     padding: 32px;
@@ -157,7 +192,7 @@ export const BASE_CSS = `
   .quick-link {
     display: flex; flex-direction: column;
     padding: 12px 14px;
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border-l);
     border-radius: var(--r-sm);
     transition: all 0.15s;
@@ -198,7 +233,7 @@ export const BASE_CSS = `
     transition: all 0.15s;
   }
   .nav-mode-toggle button.active {
-    background: white;
+    background: var(--card);
     color: var(--ink);
     box-shadow: 0 1px 4px var(--shadow);
   }
@@ -215,7 +250,7 @@ export const BASE_CSS = `
     padding: 9px 10px;
     border: 1px solid var(--border);
     border-radius: var(--r-sm);
-    background: white;
+    background: var(--card);
     color: var(--ink);
     font-family: var(--font-body);
     font-size: 0.9rem;
@@ -243,7 +278,7 @@ export const BASE_CSS = `
     padding: 0 16px;
     border: 2px solid var(--border);
     border-radius: var(--r-md);
-    background: white;
+    background: var(--card);
     color: var(--ink);
     font-size: 1.8rem;
     font-weight: 700;
@@ -252,16 +287,16 @@ export const BASE_CSS = `
     line-height: 1;
   }
   .colon-btn:active {
-    background: var(--sienna);
+    background: var(--btn);
     color: white;
-    border-color: var(--sienna);
+    border-color: var(--btn);
   }
   .nav-text-input input {
     width: 100%;
     padding: 12px 14px;
     border: 2px solid var(--border);
     border-radius: var(--r-md);
-    background: white;
+    background: var(--card);
     color: var(--ink);
     font-family: var(--font-body);
     font-size: 1.5rem;
@@ -282,7 +317,7 @@ export const BASE_CSS = `
   .nav-go-btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     padding: 13px 24px;
-    background: linear-gradient(135deg, var(--sienna), var(--sienna-d));
+    background: linear-gradient(135deg, var(--btn), var(--btn-d));
     color: white;
     border-radius: var(--r-md);
     font-size: 0.95rem; font-weight: 600;
@@ -292,7 +327,7 @@ export const BASE_CSS = `
     margin-top: 6px;
   }
   .nav-go-btn:hover {
-    background: linear-gradient(135deg, var(--sienna-l), var(--sienna));
+    background: linear-gradient(135deg, var(--btn-l), var(--btn));
     box-shadow: 0 5px 16px rgba(139,69,19,0.45);
     transform: translateY(-1px);
   }
@@ -312,7 +347,7 @@ export const BASE_CSS = `
     position: sticky; top: 0; z-index: 50;
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 24px;
-    background: rgba(245,240,232,0.92);
+    background: var(--topbar-bg);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     margin-top: 4px;
@@ -387,7 +422,7 @@ export const BASE_CSS = `
     padding: 12px 14px;
     border-radius: var(--r-sm);
     border: 1px solid var(--border-l);
-    background: white;
+    background: var(--card);
     transition: all 0.15s;
     color: var(--ink-2);
   }
@@ -455,7 +490,7 @@ export const BASE_CSS = `
   .translation-block {
     margin-bottom: 32px;
     padding: 24px 28px;
-    background: white;
+    background: var(--card);
     border-radius: var(--r-md);
     border: 1px solid var(--border-l);
     border-left: 4px solid var(--gold);
@@ -517,7 +552,7 @@ export const BASE_CSS = `
   .abn-btn {
     display: flex; align-items: center; gap: 12px;
     padding: 14px 20px;
-    background: white;
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--r-md);
     flex: 1; max-width: 220px;
@@ -554,7 +589,7 @@ export const BASE_CSS = `
   .nf-home-btn {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 13px 28px;
-    background: linear-gradient(135deg, var(--sienna), var(--sienna-d));
+    background: linear-gradient(135deg, var(--btn), var(--btn-d));
     color: white; border-radius: var(--r-md);
     font-size: 0.95rem; font-weight: 600;
     box-shadow: 0 3px 12px rgba(139,69,19,0.35);
@@ -588,7 +623,7 @@ export const BASE_CSS = `
     .nav-card { padding: 20px 16px; }
     .quick-grid { grid-template-columns: 1fr 1fr; }
     .tafsir-topbar { padding: 10px 16px; }
-    .ref-sura { display: none; }
+    .ref-sura, .ref-sep { display: none; }
     .arabic-block { padding: 20px 16px; }
     .translation-block { padding: 16px 20px; }
     .article-bottom-nav { flex-direction: column; }

@@ -186,7 +186,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/bg_arabic"
-                    android:fontFamily="@font/scheherazade"
+                    android:fontFamily="@font/amiri_quran"
                     android:gravity="center"
                     android:lineSpacingMultiplier="1.35"
                     android:paddingHorizontal="20dp"

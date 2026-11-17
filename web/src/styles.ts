@@ -1,5 +1,5 @@
 export const BASE_CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Amiri+Quran&family=Scheherazade+New:wght@400;700&family=Source+Sans+3:wght@300;400;500;600&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,7 +27,8 @@ export const BASE_CSS = `
     --r-lg: 20px;
     --font-body: 'Source Sans 3', sans-serif;
     --font-serif: 'Lora', serif;
-    --font-arabic: 'Noto Naskh Arabic', serif;
+    --font-arabic: 'Scheherazade New', serif;
+    --font-quran: 'Amiri Quran', 'Scheherazade New', serif;
     --card:         #ffffff;
     --topbar-bg:    rgba(245,240,232,0.92);
     --btn:          #8b4513;
@@ -479,7 +480,7 @@ export const BASE_CSS = `
     text-align: center;
   }
   .arabic-text {
-    font-family: var(--font-arabic);
+    font-family: var(--font-quran);
     font-size: clamp(1.8rem, 4vw, 2.8rem);
     line-height: 2;
     color: var(--ink);
